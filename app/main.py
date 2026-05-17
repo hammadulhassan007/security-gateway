@@ -6,10 +6,10 @@ import uuid
 import sys
 import os
 
-# Yeh do lines Python ko batayengi ke 'app' folder ke andar ke saare folders ko sahi se dhoondhe
+
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
-# Ab aapke saare imports bina kisi error ke chalenge
+
 from utils.language import detect_language
 from utils.logging import log_audit_request
 from detectors.rule_detector import calc_rule_risk
@@ -42,29 +42,29 @@ async def analyze_input(payload: InputPayload):
     if not raw:
         raise HTTPException(status_code=400, detail="Empty input string not allowed")
 
-    # 1. Pipeline Component: Language Recognition
+   
     language = detect_language(raw)
 
-    # 2. Pipeline Component: Hybrid Security Checks
+   
     rule_score = calc_rule_risk(raw)
     semantic_score = semantic_detector.calc_semantic_risk(raw)
 
-    # 3. Pipeline Component: Microsoft Presidio Data Masking
+  
     pii_entities, safe_text = process_pii(raw)
 
-    # 4. Pipeline Component: Policy Decision engine execution
+   
     final_risk, decision, reason_codes = evaluate_gateway_policy(
         rule_score, semantic_score, pii_entities
     )
 
-    # Latency Calculation
+    
     latency_ms = round((time.time() - start_time) * 1000, 2)
     input_id = f"case_{uuid.uuid4().hex[:3]}"
 
-    # 5. Pipeline Component: Audit Logging history update
+ 
     log_audit_request(input_id, decision, final_risk, latency_ms)
 
-    # Standardized output JSON schema matching your university guidelines perfectly
+  
     return {
         "input_id": input_id,
         "language": language,
