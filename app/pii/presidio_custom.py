@@ -5,7 +5,7 @@ import re
 analyzer = AnalyzerEngine()
 anonymizer = AnonymizerEngine()
 
-# Custom Recognizer jo aapke aur university ke patterns ko handle karega
+
 class LocalIdentityRecognizer(EntityRecognizer):
     def __init__(self):
         super().__init__(supported_entities=["CNIC", "STUDENT_ID", "API_KEY", "PHONE_NUMBER"])
@@ -13,33 +13,33 @@ class LocalIdentityRecognizer(EntityRecognizer):
     def analyze(self, text, entities=None, nlp_artifacts=None):
         results = []
         
-        # 1. Pakistani CNIC (Lab Final requirement)
+    
         cnic_matches = re.finditer(r'\b\d{5}-\d{7}-\d{1}\b', text)
         for m in cnic_matches:
             results.append(RecognizerResult("CNIC", m.start(), m.end(), 0.85))
             
-        # 2. Student Registration ID (Aapka purana COMSATS format)
+     
         id_matches = re.finditer(r'\b(CSC|FA|SP|CIIT)\d{2}-[A-Z]{3}-\d{3}\b', text, re.IGNORECASE)
         for m in id_matches:
             results.append(RecognizerResult("STUDENT_ID", m.start(), m.end(), 0.90))
 
-        # 3. API Keys (Aapke purane patterns)
+     
         api_pattern = r'\b(sk-[a-zA-Z0-9]{20,}|pk_live_[a-zA-Z0-9]{20,}|AKIA[0-9A-Z]{16})\b'
         for m in re.finditer(api_pattern, text):
             results.append(RecognizerResult("API_KEY", m.start(), m.end(), 0.95))
             
-        # 4. Phone Numbers (Aapka purana phone regex)
+       
         phone_pattern = r'(\+?\d{1,3}[-.\s]?)?(\d{3}[-.\s]?\d{3}[-.\s]?\d{4})'
         for m in re.finditer(phone_pattern, text):
             results.append(RecognizerResult("PHONE_NUMBER", m.start(), m.end(), 0.92))
             
         return results
 
-# Hamare naye customized recognizer ko Presidio mein register karna
+
 analyzer.registry.add_recognizer(LocalIdentityRecognizer())
 
 def process_pii(text: str):
-    # Context-Aware Scoring: Agar keywords paas hon to confidence score ko boost karna
+
     context_words = ["cnic", "identity", "phone", "student", "registration", "api", "key", "email"]
     boost = 0.10 if any(cw in text.lower() for cw in context_words) else 0.0
 
@@ -47,10 +47,10 @@ def process_pii(text: str):
     processed_entities = []
     
     for res in raw_results:
-        # Confidence Calibration
+      
         calibrated_score = min(res.score + boost, 1.0)
         
-        # Sirf high confidence entities ko list mein rakhna (Thresholding)
+       
         if calibrated_score >= 0.60:
             res.score = calibrated_score
             processed_entities.append({
@@ -59,6 +59,6 @@ def process_pii(text: str):
                 "score": round(res.score, 2)
             })
 
-    # Anonymization: Presidio engine se text ko mask/hide karna
+    
     masked_text = anonymizer.anonymize(text=text, analyzer_results=raw_results).text
     return processed_entities, masked_text
