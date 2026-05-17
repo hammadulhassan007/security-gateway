@@ -1,0 +1,8 @@
+thresholds:
+  block_threshold: 0.70
+  mask_threshold: 0.50
+  rule_weight: 0.40
+  semantic_weight: 0.60
+
+presidio:
+  min_score: 0.60

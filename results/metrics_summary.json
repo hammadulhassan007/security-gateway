@@ -1,0 +1,16 @@
+{
+    "dataset_total_rows": 155,
+    "overall_pipeline_accuracy_percentage": 63.87,
+    "confusion_matrix": {
+        "true_positives": 24,
+        "false_positives": 0,
+        "true_negatives": 85,
+        "false_negatives": 46
+    },
+    "metrics": {
+        "precision": 1.0,
+        "recall": 0.3429,
+        "f1_score": 0.5107
+    },
+    "evaluation_duration_secs": 3.05
+}
