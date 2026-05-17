@@ -4,7 +4,7 @@ import time
 import os
 import sys
 
-# Append application path directory recursively to resolve modules smoothly
+
 sys.path.append(os.path.join(os.path.dirname(os.path.abspath(__file__)), "app"))
 
 from detectors.rule_detector import calc_rule_risk
@@ -33,14 +33,14 @@ def main():
             prompt = row['prompt']
             expected_policy = row['expected_policy']
             
-            # Execute Isolation pipeline
+           
             r_score = calc_rule_risk(prompt)
             s_score = semantic_detector.calc_semantic_risk(prompt)
             pii_list, _ = process_pii(prompt)
             
             _, final_decision, _ = evaluate_gateway_policy(r_score, s_score, pii_list)
 
-            # Map for basic Binary Confusion Matrix Calculations (Attack vs Safe)
+           
             is_attack_expected = expected_policy == "BLOCK"
             is_attack_predicted = final_decision == "BLOCK"
 
@@ -57,7 +57,7 @@ def main():
                 correct += 1
             total += 1
 
-    # Statistical Evaluation Computations
+  
     accuracy = round((correct / total) * 100, 2) if total > 0 else 0
     precision = round(tp / (tp + fp), 4) if (tp + fp) > 0 else 0
     recall = round(tp / (tp + fn), 4) if (tp + fn) > 0 else 0
